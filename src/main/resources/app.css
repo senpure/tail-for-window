@@ -1,0 +1,44 @@
+.root {
+    -fx-tail-background: #2b2b2b;
+    -fx-decorator-color: derive(-fx-tail-background, -24%);
+}
+
+
+.text-area {
+    -fx-background-radius: 0;
+
+    -fx-background-color: -fx-tail-background;
+    -fx-text-fill: #bbbbbb;
+}
+
+.text-area .content {
+    -fx-background-radius: 0;
+    -fx-background-color: -fx-tail-background;
+
+}
+
+.text-area .corner {
+    -fx-background-radius: 0;
+    -fx-background-color: derive(-fx-tail-background, -24%);
+
+}
+
+.scroll-bar:horizontal,
+.scroll-bar:vertical {
+    -fx-background-color: derive(-fx-tail-background, -24%);
+}
+.scroll-bar:horizontal .track,
+.scroll-bar:vertical .track{
+    -fx-background-color: derive(-fx-tail-background, -24%);
+}
+.scroll-bar .increment-button,
+.scroll-bar .decrement-button{
+    -fx-background-color: derive(-fx-tail-background, -24%);
+}
+
+.scroll-bar:horizontal .thumb,
+.scroll-bar:vertical .thumb {
+    -fx-background-color: derive(-fx-tail-background, -2%);
+}
+
+
