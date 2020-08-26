@@ -3,37 +3,56 @@
     -fx-decorator-color: derive(-fx-tail-background, -24%);
 }
 
+.jfx-decorator {
+    -fx-background-color: -fx-tail-background;
+
+}
+
+.jfx-decorator .resize-border {
+
+    -fx-border-width: 0 4 4 4;
+}
 
 .text-area {
     -fx-background-radius: 0;
-
     -fx-background-color: -fx-tail-background;
     -fx-text-fill: #bbbbbb;
+
+
+}
+
+.text-area .scroll-pane {
+-fx-padding: 0;
 }
 
 .text-area .content {
+
     -fx-background-radius: 0;
     -fx-background-color: -fx-tail-background;
-
 }
 
 .text-area .corner {
+    -fx-background-insets: 0;
     -fx-background-radius: 0;
-    -fx-background-color: derive(-fx-tail-background, -24%);
+    -fx-background-color: derive(-fx-tail-background, -14%);
 
 }
 
 .scroll-bar:horizontal,
 .scroll-bar:vertical {
-    -fx-background-color: derive(-fx-tail-background, -24%);
+    /*-fx-border-color: -fx-tail-background;*/
+    -fx-background-insets: 0;
+    -fx-background-color: derive(-fx-tail-background, -14%);
 }
+
 .scroll-bar:horizontal .track,
-.scroll-bar:vertical .track{
-    -fx-background-color: derive(-fx-tail-background, -24%);
+.scroll-bar:vertical .track {
+    -fx-background-color: derive(-fx-tail-background, -14%);
 }
+
 .scroll-bar .increment-button,
-.scroll-bar .decrement-button{
-    -fx-background-color: derive(-fx-tail-background, -24%);
+.scroll-bar .decrement-button {
+    -fx-background-color: derive(-fx-tail-background, -14%);
 }
 
 .scroll-bar:horizontal .thumb,

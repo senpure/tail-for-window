@@ -12,11 +12,21 @@
             <PatternLayout pattern="%d{HH:mm:ss}  %clr{[%-5level]}{cyan} - %msg%n"/>
 
         </Console>
+        <RollingFile name="File" fileName="logs/tail.log" filePattern="logs/$${date:yyyy-MM}/football.%d{yyyy-MM-dd-HH}-%i.tail.gz">
+            <PatternLayout>
+                <Pattern>${sys:FILE_LOG_PATTERN}</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy modulate="true" interval="24"/>
+                <SizeBasedTriggeringPolicy size="50 MB" />
+            </Policies>
+        </RollingFile>
     </appenders>
     <loggers>
         <logger name="com.senpure" level="error"/>
         <Root level="error">
             <AppenderRef ref="Console"/>
+            <AppenderRef ref="File"/>
         </Root>
     </loggers>
 </configuration>

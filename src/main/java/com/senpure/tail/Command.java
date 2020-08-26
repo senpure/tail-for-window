@@ -25,7 +25,10 @@ public class Command {
     private Integer num = 5;
     @Parameter(names = {"-c", "charset"}, order = 6, description = "文件编码")
     private String charset = "utf-8";
-
+    @Parameter(names = {"--null-exit-time"}, order = 7, description = "空行退出时间")
+    private long nullExitTime;
+    @Parameter(names = {"--null-exit-message"}, order = 8, description = "空行退出提示")
+    private String nullExitMessage;
     @Parameter(names = {"-h", "help"}, description = "使用帮助", order = 1000, help = true)
     private boolean help;
 
@@ -54,8 +57,8 @@ public class Command {
         } else {
 
             File file = FileUtil.file(path);
-            if (!file.exists()||file.isDirectory()) {
-                logger.error("文件路径错误");
+            if (!file.exists() || file.isDirectory()) {
+                logger.error("文件路径错误：["+file.getAbsolutePath()+"]");
                 System.exit(0);
                 return;
             }
@@ -64,6 +67,8 @@ public class Command {
                 System.exit(0);
                 return;
             }
+            tail.setNullExitMessage(nullExitMessage);
+            tail.setNullExitTime(nullExitTime);
             tail.tail(file, num, charset);
 
         }
@@ -101,6 +106,22 @@ public class Command {
 
     public void setCharset(String charset) {
         this.charset = charset;
+    }
+
+    public long getNullExitTime() {
+        return nullExitTime;
+    }
+
+    public void setNullExitTime(long nullExitTime) {
+        this.nullExitTime = nullExitTime;
+    }
+
+    public String getNullExitMessage() {
+        return nullExitMessage;
+    }
+
+    public void setNullExitMessage(String nullExitMessage) {
+        this.nullExitMessage = nullExitMessage;
     }
 
     @Override

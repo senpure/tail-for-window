@@ -7,7 +7,10 @@ import com.senpure.tail.Tail;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.control.TextArea;
+import javafx.scene.layout.Background;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -30,9 +33,24 @@ public class MainController implements Initializable, ApplicationRunner {
 
     private String[] args;
 
+
+    private void init() {
+        Stage primaryStage = Javafx.getPrimaryStage();
+        Rectangle2D screenRectangle = Screen.getPrimary().getBounds();
+        double width = screenRectangle.getWidth();
+        //double height = screenRectangle.getHeight();
+        primaryStage.setX(width - textArea.getPrefWidth() - 16);
+        primaryStage.setY(8);
+    }
+
+    public void full() {
+        Javafx.getPrimaryStage().setFullScreen(!Javafx.getPrimaryStage().isFullScreen());
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
+        init();
 
         Tail tail = new Tail((line, newLine) -> Platform.runLater(() -> {
 
@@ -44,7 +62,18 @@ public class MainController implements Initializable, ApplicationRunner {
         Command command = new Command();
 
         Platform.runLater(() -> {
+            textArea.requestFocus();
+
             Stage stage = Javafx.getPrimaryStage();
+
+            Background background = textArea.getBackground();
+            if (background != null) {
+                stage.getScene().setFill(textArea.getBackground().getFills().get(0).getFill());
+               // stage.getScene().setFill(Color.RED);
+            }
+
+
+            // stage.getScene().setFill(textArea.getBackground().);
             StringBuilder sb = new StringBuilder();
 
             sb.append("[");
@@ -56,12 +85,12 @@ public class MainController implements Initializable, ApplicationRunner {
             }
             sb.append("]");
             if (sb.length() > 20) {
-              //  sb.delete(1, 19);
-              //  sb.insert(1, "...");
+                //  sb.delete(1, 19);
+                //  sb.insert(1, "...");
             }
             String title = stage.getTitle() + " " + sb.toString();
 
-           // stage.setTitle(title);
+            // stage.setTitle(title);
         });
         command.execute(tail, args);
     }

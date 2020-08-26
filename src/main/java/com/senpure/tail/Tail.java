@@ -1,6 +1,8 @@
 package com.senpure.tail;
 
 
+import org.springframework.util.StringUtils;
+
 import java.io.File;
 import java.io.RandomAccessFile;
 import java.nio.charset.StandardCharsets;
@@ -11,7 +13,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 
 
-
 public class Tail {
 
     private final BiConsumer<String, Boolean> consumer;
@@ -20,6 +21,9 @@ public class Tail {
 
     private final ScheduledExecutorService service;
     private ScheduledFuture<?> tailScheduledFuture;
+
+    private long nullExitTime = 0;
+    private String nullExitMessage;
 
     public Tail() {
         this(Tail::accept);
@@ -44,15 +48,15 @@ public class Tail {
 
     public void tail(File file) {
 
-        tail(file, 5,"utf-8");
+        tail(file, 5, "utf-8");
     }
 
-    public void tail(File file,int lastLine) {
+    public void tail(File file, int lastLine) {
 
-        tail(file, lastLine,"utf-8");
+        tail(file, lastLine, "utf-8");
     }
 
-    public void tail(File file, int lastLine,String charsetName) {
+    public void tail(File file, int lastLine, String charsetName) {
         if (this.file != null) {
             return;
         }
@@ -80,7 +84,7 @@ public class Tail {
                 dataFile.seek(i);
             }
 
-            tailScheduledFuture = service.scheduleAtFixedRate(() -> tail(dataFile,charsetName), 0, 300, TimeUnit.MILLISECONDS);
+            tailScheduledFuture = service.scheduleAtFixedRate(() -> tail(dataFile, charsetName), 0, 300, TimeUnit.MILLISECONDS);
 
             //    tail(dataFile);
 
@@ -90,19 +94,36 @@ public class Tail {
 
     }
 
-    private void tail(RandomAccessFile dataFile,String charsetName) {
+    private long firstNullTime = 0;
+    private boolean lastLineEnd = true;
+
+    private void tail(RandomAccessFile dataFile, String charsetName) {
         int lineEndChar = 10;
         boolean checkEnd = false;
         String show = null;
         boolean flag = true;
+        boolean exit = false;
         while (flag) {
             try {
                 String line = dataFile.readLine();
                 if (line == null) {
+                    if (nullExitTime > 0) {
+                        long now = System.currentTimeMillis();
+                        if (firstNullTime == 0) {
+                            firstNullTime = now;
+                        } else {
+                            if (now - firstNullTime >= nullExitTime) {
+                                exit = true;
+                            }
+                        }
+                    }
+
                     checkEnd = true;
                     dataFile.seek(dataFile.getFilePointer() - 1);
                     lineEndChar = dataFile.read();
 
+                } else {
+                    firstNullTime = 0;
                 }
                 if (show != null) {
                     show = new String(show.getBytes(StandardCharsets.ISO_8859_1), charsetName);
@@ -110,14 +131,17 @@ public class Tail {
                         checkEnd = false;
                         if (show.isEmpty()) {
                             // show = "[" + show + "empty]";
+                            lastLineEnd = true;
                             consumer.accept(show, true);
                         } else {
                             //show = "[" + show + "end" + (lineEndChar == '\n') + lineEndChar + "]";
-                            consumer.accept(show, lineEndChar == '\n');
+                            lastLineEnd = lineEndChar == '\n';
+                            consumer.accept(show, lastLineEnd);
                         }
 
                     } else {
                         //   show = "[" + show + "normal]";
+                        lastLineEnd = true;
                         consumer.accept(show, true);
                     }
                 }
@@ -130,6 +154,19 @@ public class Tail {
             }
 
         }
+        if (exit) {
+
+            if (StringUtils.hasText(nullExitMessage)) {
+                if (!lastLineEnd) {
+                    consumer.accept("", true);
+                }
+                consumer.accept(nullExitMessage, true);
+            }
+            stop();
+            service.schedule(() -> System.exit(0), 1500, TimeUnit.MILLISECONDS);
+
+
+        }
     }
 
 
@@ -140,6 +177,22 @@ public class Tail {
         if (tailScheduledFuture != null) {
             tailScheduledFuture.cancel(false);
         }
+    }
+
+    public long getNullExitTime() {
+        return nullExitTime;
+    }
+
+    public void setNullExitTime(long nullExitTime) {
+        this.nullExitTime = nullExitTime;
+    }
+
+    public String getNullExitMessage() {
+        return nullExitMessage;
+    }
+
+    public void setNullExitMessage(String nullExitMessage) {
+        this.nullExitMessage = nullExitMessage;
     }
 
     public static void main(String[] args) {
