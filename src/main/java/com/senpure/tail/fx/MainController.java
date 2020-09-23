@@ -69,30 +69,29 @@ public class MainController implements Initializable, ApplicationRunner {
             Background background = textArea.getBackground();
             if (background != null) {
                 stage.getScene().setFill(textArea.getBackground().getFills().get(0).getFill());
-               // stage.getScene().setFill(Color.RED);
+                // stage.getScene().setFill(Color.RED);
             }
 
 
             // stage.getScene().setFill(textArea.getBackground().);
-            StringBuilder sb = new StringBuilder();
-
-            sb.append("[");
-            for (int i = 0; i < args.length; i++) {
-                if (i > 0) {
-                    sb.append(" ");
-                }
-                sb.append(args[i]);
-            }
-            sb.append("]");
-            if (sb.length() > 20) {
-                //  sb.delete(1, 19);
-                //  sb.insert(1, "...");
-            }
-            String title = stage.getTitle() + " " + sb.toString();
-
+//            StringBuilder sb = new StringBuilder();
+//            sb.append("[");
+//            for (int i = 0; i < args.length; i++) {
+//                if (i > 0) {
+//                    sb.append(" ");
+//                }
+//                sb.append(args[i]);
+//            }
+//            sb.append("]");
+//            if (sb.length() > 20) {
+//                //  sb.delete(1, 19);
+//                //  sb.insert(1, "...");
+//            }
+            // String title = stage.getTitle() + " " + sb.toString();
+            command.execute(tail, args);
             // stage.setTitle(title);
         });
-        command.execute(tail, args);
+
     }
 
 

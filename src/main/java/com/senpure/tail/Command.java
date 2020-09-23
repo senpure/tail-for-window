@@ -3,6 +3,7 @@ package com.senpure.tail;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.UsageFormatter;
+import com.senpure.javafx.Javafx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +18,7 @@ import java.util.Arrays;
  */
 public class Command {
 
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Parameter(order = 0, description = "文件路径", required = true)
     private String path;
@@ -29,6 +30,8 @@ public class Command {
     private long nullExitTime;
     @Parameter(names = {"--null-exit-message"}, order = 8, description = "空行退出提示")
     private String nullExitMessage;
+    @Parameter(names = {"name"}, order = 9, description = "额外标题名")
+    private String name;
     @Parameter(names = {"-h", "help"}, description = "使用帮助", order = 1000, help = true)
     private boolean help;
 
@@ -67,6 +70,12 @@ public class Command {
                 System.exit(0);
                 return;
             }
+            if (name != null) {
+                String title = Javafx.getPrimaryStage().getTitle();
+                title = title + " - " + name + "";
+               // logger.info("name {}",name);
+                Javafx.getPrimaryStage().setTitle(title);
+            }
             tail.setNullExitMessage(nullExitMessage);
             tail.setNullExitTime(nullExitTime);
             tail.tail(file, num, charset);
@@ -74,6 +83,14 @@ public class Command {
         }
 
 
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public boolean isHelp() {
@@ -123,6 +140,7 @@ public class Command {
     public void setNullExitMessage(String nullExitMessage) {
         this.nullExitMessage = nullExitMessage;
     }
+
 
     @Override
     public String toString() {
